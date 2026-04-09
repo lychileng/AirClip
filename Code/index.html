@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>AirClip</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600&family=Roboto:wght@700&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -141,14 +141,14 @@ body { height:100%; display:flex; flex-direction:column; overflow:hidden; font-f
 }
 .h-icon svg { width:16px; height:16px; }
 .h-text  { min-width:0; }
-.h-title { font-size:16px; font-weight:600; letter-spacing:-0.02em; }
+.h-title { font-size:18px; font-weight:700; font-family:'Roboto', sans-serif; letter-spacing:0.05em; }
 .h-sub   { font-family:var(--mono); font-size:10px; color:var(--text3); letter-spacing:.04em; margin-top:1px; }
 .h-right { display:flex; align-items:center; gap:8px; flex-shrink:0; }
 
 .btn-hdr {
   background:var(--surface2); border:1px solid var(--border);
-  color:var(--text3); font-family:var(--sans); font-size:13px; font-weight:400;
-  padding:5px 12px; border-radius:9px; cursor:pointer;
+  color:var(--text3); font-family:var(--sans); font-size:12px; font-weight:400;
+  padding:5px 8px; border-radius:20px; cursor:pointer;
   transition:all .15s; -webkit-tap-highlight-color:transparent;
 }
 .btn-hdr:hover  { border-color:var(--border2); color:var(--text2); }
@@ -214,7 +214,7 @@ body { height:100%; display:flex; flex-direction:column; overflow:hidden; font-f
 
 /* ── Composer ───────────────────────────────────────── */
 .composer {
-  flex-shrink:0; padding:10px 12px calc(var(--safe-bot) + 10px);
+  flex-shrink:0; padding:14px 12px calc(var(--safe-bot) + 12px);
   background:rgba(10,10,10,.85); -webkit-backdrop-filter:blur(28px) saturate(180%); backdrop-filter:blur(28px) saturate(180%);
   border-top:1px solid var(--border); z-index:10;
 }
@@ -356,22 +356,15 @@ textarea::placeholder { color:var(--text3); }
 <!-- Header -->
 <div class="header">
   <div class="h-brand">
-    <div class="h-icon">
-      <svg viewBox="0 0 16 16" fill="none">
-        <path d="M3 4.5C3 3.67 3.67 3 4.5 3h7C12.33 3 13 3.67 13 4.5v7c0 .83-.67 1.5-1.5 1.5h-7C3.67 13 3 12.33 3 11.5v-7z" stroke="rgba(255,255,255,0.5)" stroke-width="1.2"/>
-        <path d="M5.5 7.5h5M5.5 9.5h3" stroke="rgba(255,255,255,0.75)" stroke-width="1.2" stroke-linecap="round"/>
-        <circle cx="6" cy="5.5" r=".8" fill="rgba(255,255,255,0.5)"/>
-      </svg>
-    </div>
     <div class="h-text">
       <div class="h-title">AirClip</div>
       <div class="h-sub" id="hSub">LAN Clipboard</div>
     </div>
   </div>
   <div class="h-right">
-    <button class="btn-hdr" id="themeBtn" onclick="toggleTheme()">☀︎</button>
-    <button class="btn-hdr" onclick="openDevices()">Devices</button>
-    <button class="btn-hdr" onclick="clearAll()">Clear</button>
+    <button class="btn-hdr" id="themeBtn" onclick="toggleTheme()">⚪️</button>
+    <button class="btn-hdr" onclick="openDevices()">💻</button>
+    <button class="btn-hdr" onclick="clearAll()">🗑️</button>
   </div>
 </div>
 
@@ -390,6 +383,7 @@ textarea::placeholder { color:var(--text3); }
 <div class="composer">
   <div class="c-box">
     <textarea id="ta" placeholder="Paste or type…" rows="1"
+      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
       oninput="onInput()" onkeydown="onKey(event)"></textarea>
     <div class="c-bar">
       <div class="c-left">
@@ -666,10 +660,30 @@ function previewFile(msgId) {
 async function copyMsg(id, btn) {
   const m = messages.find(x => x.id === id);
   if (!m) return;
-  await navigator.clipboard.writeText(m.content);
-  const prev = btn.textContent;
-  btn.textContent = 'Copied ✓'; btn.classList.add('copied');
-  setTimeout(() => { btn.textContent = prev; btn.classList.remove('copied'); }, 1500);
+
+  let ok = false;
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    try { await navigator.clipboard.writeText(m.content); ok = true; } catch {}
+  }
+
+  if (!ok) {
+    const ta = document.createElement('textarea');
+    ta.value = m.content;
+    ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    try { ok = document.execCommand('copy'); } catch {}
+    document.body.removeChild(ta);
+  }
+
+  if (ok) {
+    const prev = btn.textContent;
+    btn.textContent = 'Copied ✓'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = prev; btn.classList.remove('copied'); }, 1500);
+  } else {
+    showToast('Copy failed');
+  }
 }
 async function delMsg(id) { await apiFetch(`/delete/${id}`, { method: 'DELETE' }); }
 async function clearAll() {
@@ -863,7 +877,7 @@ let isLight = false;
 function toggleTheme() {
   isLight = !isLight;
   document.documentElement.classList.toggle('light', isLight);
-  document.getElementById('themeBtn').textContent = isLight ? '☽' : '☀︎';
+  document.getElementById('themeBtn').textContent = isLight ? '⚫️' : '⚪️';
   try { localStorage.setItem('airclip-theme', isLight ? 'light' : 'dark'); } catch {}
 }
 function initTheme() {
@@ -871,7 +885,7 @@ function initTheme() {
     if (localStorage.getItem('airclip-theme') === 'light') {
       isLight = true;
       document.documentElement.classList.add('light');
-      document.getElementById('themeBtn').textContent = '☽';
+      document.getElementById('themeBtn').textContent = '⚫️';
     }
   } catch {}
 }
@@ -888,6 +902,21 @@ async function boot() {
 }
 
 boot();
+
+// ── iOS keyboard / accessory bar compensation ─────────
+if (window.visualViewport) {
+  const composer = () => document.querySelector('.composer');
+  const onViewport = () => {
+    const el = composer();
+    if (!el) return;
+    const gap = window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop;
+    el.style.paddingBottom = gap > 0
+      ? `${gap + 12}px`
+      : `calc(env(safe-area-inset-bottom, 0px) + 12px)`;
+  };
+  window.visualViewport.addEventListener('resize', onViewport);
+  window.visualViewport.addEventListener('scroll', onViewport);
+}
 </script>
 </body>
 </html>
