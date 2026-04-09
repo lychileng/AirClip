@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Temporary uploads (auto-purged on restart)
+uploads/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp

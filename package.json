@@ -1,0 +1,13 @@
+{
+  "name": "clipserver",
+  "version": "1.0.0",
+  "description": "Local clipboard server for LAN sharing",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "busboy": "^1.6.0",
+    "ws": "^8.18.0"
+  }
+}
