@@ -17,8 +17,15 @@ const UPLOAD_DIR     = path.join(__dirname, 'uploads');
 const HOSTNAME       = 'air.clip';
 const UPSTREAM_DNS   = '223.5.5.5';
 
-// Ensure upload directory exists
-if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+// Ensure upload directory exists; purge any leftover files from previous run
+// (message index is in-memory only, so all on-disk files become orphans on restart)
+if (!fs.existsSync(UPLOAD_DIR)) {
+  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+} else {
+  for (const f of fs.readdirSync(UPLOAD_DIR)) {
+    try { fs.unlinkSync(path.join(UPLOAD_DIR, f)); } catch {}
+  }
+}
 
 // ── Auth ──────────────────────────────────────────────────
 const OTP = String(Math.floor(100000 + Math.random() * 900000));
@@ -65,7 +72,7 @@ function receiveFile(req) {
     if (!ct.includes('multipart/form-data')) { reject(new Error('not_multipart')); return; }
 
     const bb = Busboy({ headers: req.headers, limits: { files: 1, fileSize: LARGE_LIMIT } });
-    let meta = { sender: 'Device', filename: 'file', mime: 'application/octet-stream' };
+    let meta = { sender: 'Device', filename: 'file', mime: 'application/octet-stream', text: '' };
     let fileId = null, filePath = null, fileSize = 0, limitHit = false;
 
     bb.on('field', (name, val) => { meta[name] = val.slice(0, 256); });
@@ -168,8 +175,11 @@ const server = http.createServer(async (req, res) => {
         json(res, e.message === 'too_large' ? 413 : 400, { error: e.message });
         return;
       }
+      const hasText = typeof info.text === 'string' && info.text.trim().length > 0;
       const msg = {
-        id: randomUUID(), type: 'file-large',
+        id: randomUUID(),
+        type: hasText ? 'mixed-large' : 'file-large',
+        text: hasText ? info.text.trim() : null,
         fileId: info.fileId, filename: info.filename,
         mime: info.mime, size: info.fileSize,
         ts: Date.now(),
@@ -186,10 +196,22 @@ const server = http.createServer(async (req, res) => {
     let body;
     try { body = await readBody(req, SMALL_LIMIT + 65536); }
     catch (e) { json(res, e.message === 'too_large' ? 413 : 400, { error: e.message }); return; }
+
+    // Determine type: text-only, file-only, or mixed
+    const hasText = typeof body.text === 'string' && body.text.trim().length > 0;
+    const hasFile = body.type === 'file' && body.content;
+    const msgType = hasText && hasFile ? 'mixed' : hasFile ? 'file' : 'text';
+
     const msg = {
-      id: randomUUID(), type: body.type || 'text',
-      content: body.content, filename: body.filename || null,
-      mime: body.mime || null, ts: Date.now(),
+      id: randomUUID(),
+      type: msgType,
+      // text field (for text and mixed)
+      text: hasText ? body.text.trim() : (msgType === 'text' ? (body.content || '') : null),
+      // file fields (for file and mixed)
+      content:  hasFile ? body.content  : null,
+      filename: hasFile ? body.filename : null,
+      mime:     hasFile ? body.mime     : null,
+      ts: Date.now(),
       sender: (body.sender || dev.name).slice(0, 32),
     };
     messages.unshift(msg);
