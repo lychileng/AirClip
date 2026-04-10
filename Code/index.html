@@ -8,6 +8,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>AirClip</title>
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%23161618'/%3E%3Cpath d='M9 13C9 11.9 9.9 11 11 11h10c1.1 0 2 .9 2 2v6c0 1.1-.9 2-2 2H11c-1.1 0-2-.9-2-2v-6z' stroke='%23f5f5f7' stroke-width='1.5' fill='none'/%3E%3Cpath d='M12.5 16.5h7M12.5 19h4.5' stroke='%23f5f5f7' stroke-width='1.5' stroke-linecap='round'/%3E%3Ccircle cx='12.5' cy='13.5' r='.9' fill='%23f5f5f7'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link
     href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600&family=Roboto:wght@700&display=swap"
@@ -29,15 +31,19 @@
       --surface3: #262628;
       --border: rgba(255, 255, 255, 0.08);
       --border2: rgba(255, 255, 255, 0.14);
-      --blue: #0a84ff;
+      --blue: #2e78c2;
       --blue-dim: rgba(10, 132, 255, 0.15);
       --green: #30d158;
       --text: #f5f5f7;
       --text2: rgba(255, 255, 255, 0.55);
       --text3: rgba(255, 255, 255, 0.28);
       --danger: #ff453a;
-      --steel: #4a6080;
-      --steel-bg: rgba(74, 96, 128, 0.18);
+      --steel: #ffffff;
+      --steel-bg: #2e78c2;
+      --icon: rgb(200, 200, 200);
+      /* icon default — dark theme */
+      --icon-dim: rgb(200, 200, 200);
+      /* icon muted */
       --radius: 14px;
       --radius-lg: 18px;
       --mono: 'Geist Mono', ui-monospace, monospace;
@@ -57,8 +63,12 @@
       --text: #1c1c1e;
       --text2: rgba(0, 0, 0, 0.55);
       --text3: rgba(0, 0, 0, 0.30);
-      --steel: #3a5070;
-      --steel-bg: rgba(58, 80, 112, 0.10);
+      --steel: #ffffff;
+      --steel-bg: #2e78c2;
+      --icon: rgb(80, 80, 80);
+      /* icon default — light theme */
+      --icon-dim: rgba(80, 80, 80);
+      /* icon muted */
     }
 
     /* ── Base ── */
@@ -273,9 +283,9 @@
 
     .h-title {
       font-size: 18px;
-      font-weight: 700;
-      font-family: 'Roboto', sans-serif;
-      letter-spacing: 0.05em;
+      font-weight: 900;
+      font-family: var(--mono);
+      letter-spacing: 0.04em;
     }
 
     .h-sub {
@@ -303,7 +313,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--text3);
+      color: var(--icon-dim);
       cursor: pointer;
       transition: all .15s;
       -webkit-tap-highlight-color: transparent;
@@ -316,7 +326,7 @@
 
     .btn-hdr:hover {
       border-color: var(--border2);
-      color: var(--text2);
+      color: var(--icon);
     }
 
     .btn-hdr:active {
@@ -509,17 +519,24 @@
     }
 
     .f-btn {
-      font-size: 12px;
-      font-weight: 500;
-      padding: 6px 14px;
+      width: 28px;
+      height: 28px;
+      padding: 0;
       border-radius: 980px;
-      text-decoration: none;
-      white-space: nowrap;
       border: none;
       cursor: pointer;
       transition: opacity .15s;
       -webkit-tap-highlight-color: transparent;
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .f-btn svg {
+      width: 14px;
+      height: 14px;
     }
 
     .f-btn-save {
@@ -530,7 +547,7 @@
 
     .f-btn-preview {
       background: var(--surface3);
-      color: var(--text2);
+      color: var(--icon-dim);
       border: 1px solid var(--border2);
     }
 
@@ -706,7 +723,7 @@
       align-items: center;
       justify-content: center;
       font-size: 12px;
-      color: var(--text3);
+      color: var(--icon-dim);
       cursor: pointer;
       transition: all .15s;
       -webkit-tap-highlight-color: transparent;
@@ -714,7 +731,7 @@
 
     .attach-label:hover {
       border-color: var(--border2);
-      color: var(--text2);
+      color: var(--icon);
     }
 
     .attach-label:active {
@@ -1086,8 +1103,8 @@
             <label class="attach-label" title="Attach">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                 <path d="M7.5 2H3.5A1 1 0 0 0 2.5 3v8a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V5.5L7.5 2z" stroke="currentColor"
-                  stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M7.5 2v3.5H11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"
+                  stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M7.5 2v3.5H11" stroke="currentColor" stroke-width="1" stroke-linecap="round"
                   stroke-linejoin="round" />
               </svg>
               <input type="file" id="fileInput" onchange="onFile()">
@@ -1100,7 +1117,7 @@
           </div>
           <button class="send-btn" id="sendBtn" onclick="send()" disabled>
             <svg viewBox="0 0 14 14" fill="none">
-              <path d="M7 11.5V2.5M3 6.5l4-4 4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"
+              <path d="M7 11.5V2.5M3 6.5l4-4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                 stroke-linejoin="round" />
             </svg>
           </button>
@@ -1118,32 +1135,42 @@
     // ── Icons ─────────────────────────────────────────────────────────────────────
     const ICONS = {
       sun: `<svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-    <circle cx="7" cy="7" r="2.5" stroke="currentColor" stroke-width="1.4"/>
-    <line x1="7" y1="1"    x2="7"    y2="2.5"  stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-    <line x1="7" y1="11.5" x2="7"    y2="13"   stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-    <line x1="1" y1="7"    x2="2.5"  y2="7"    stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-    <line x1="11.5" y1="7" x2="13"   y2="7"    stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-    <line x1="2.93" y1="2.93"   x2="3.99"  y2="3.99"  stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-    <line x1="10.01" y1="10.01" x2="11.07" y2="11.07" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-    <line x1="11.07" y1="2.93"  x2="10.01" y2="3.99"  stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-    <line x1="3.99"  y1="10.01" x2="2.93"  y2="11.07" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+    <circle cx="7" cy="7" r="2.5" stroke="currentColor" stroke-width="1"/>
+    <line x1="7" y1="1"    x2="7"    y2="2.5"  stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+    <line x1="7" y1="11.5" x2="7"    y2="13"   stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+    <line x1="1" y1="7"    x2="2.5"  y2="7"    stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+    <line x1="11.5" y1="7" x2="13"   y2="7"    stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+    <line x1="2.93" y1="2.93"   x2="3.99"  y2="3.99"  stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+    <line x1="10.01" y1="10.01" x2="11.07" y2="11.07" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+    <line x1="11.07" y1="2.93"  x2="10.01" y2="3.99"  stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+    <line x1="3.99"  y1="10.01" x2="2.93"  y2="11.07" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
   </svg>`,
 
       moon: `<svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-    <path d="M11.5 8.5A5 5 0 0 1 5.5 2.5a5 5 0 1 0 6 6z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M11.5 8.5A5 5 0 0 1 5.5 2.5a5 5 0 1 0 6 6z" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>`,
 
       devices: `<svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-    <rect x="1" y="2" width="8" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/>
-    <path d="M3 11h4M5 8v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-    <rect x="9" y="5" width="4" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/>
+    <rect x="1" y="2" width="8" height="6" rx="1" stroke="currentColor" stroke-width="1"/>
+    <path d="M3 11h4M5 8v3" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+    <rect x="9" y="5" width="4" height="6" rx="1" stroke="currentColor" stroke-width="1"/>
     <circle cx="11" cy="10" r=".6" fill="currentColor"/>
   </svg>`,
 
       trash: `<svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-    <path d="M2 4h10M5 4V2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V4M11 4l-.7 7.5A1 1 0 0 1 9.3 12H4.7a1 1 0 0 1-1-.5L3 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-    <line x1="5.5" y1="6.5" x2="5.5" y2="9.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-    <line x1="8.5" y1="6.5" x2="8.5" y2="9.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+    <path d="M2 4h10M5 4V2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V4M11 4l-.7 7.5A1 1 0 0 1 9.3 12H4.7a1 1 0 0 1-1-.5L3 4" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="5.5" y1="6.5" x2="5.5" y2="9.5" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+    <line x1="8.5" y1="6.5" x2="8.5" y2="9.5" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+  </svg>`,
+
+      save: `<svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+    <path d="M7 2v7M4.5 6.5 7 9l2.5-2.5" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M2 10v1.5A.5.5 0 0 0 2.5 12h9a.5.5 0 0 0 .5-.5V10" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+  </svg>`,
+
+      preview: `<svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+    <path d="M1 7s2-4 6-4 6 4 6 4-2 4-6 4-6-4-6-4z" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="7" cy="7" r="1.8" stroke="currentColor" stroke-width="1"/>
   </svg>`,
     };
 
@@ -1349,19 +1376,19 @@
         return `<div class="b-file"><div class="b-file-row">
   <div class="f-icon">${fileEmoji(m.mime)}</div>
   <div class="f-info"><div class="f-name">${esc(m.filename)}</div><div class="f-size">${humanSize(m.size || 0)}</div></div>
-  <div class="f-btns"><button class="f-btn f-btn-save" onclick="downloadLarge('${m.fileId}','${esc(m.filename)}')">Save</button></div>
+  <div class="f-btns"><button class="f-btn f-btn-save" title="Save" onclick="downloadLarge('${m.fileId}','${esc(m.filename)}')">${ICONS.save}</button></div>
 </div></div>`;
       }
 
       const dataUrl = `data:${m.mime};base64,${m.content}`;
       const canPreview = /^(image|audio|video)\//.test(m.mime) || m.mime.includes('pdf');
       const previewBtn = canPreview
-        ? `<button class="f-btn f-btn-preview" onclick="previewFile('${m.id}')">Preview</button>` : '';
+        ? `<button class="f-btn f-btn-preview" title="Preview" onclick="previewFile('${m.id}')">${ICONS.preview}</button>` : '';
 
       return `<div class="b-file"><div class="b-file-row">
   <div class="f-icon">${fileEmoji(m.mime)}</div>
   <div class="f-info"><div class="f-name">${esc(m.filename)}</div><div class="f-size">${humanSize(m.content.length * 0.75)}</div></div>
-  <div class="f-btns">${previewBtn}<a class="f-btn f-btn-save" href="${dataUrl}" download="${esc(m.filename)}">Save</a></div>
+  <div class="f-btns">${previewBtn}<a class="f-btn f-btn-save" title="Save" href="${dataUrl}" download="${esc(m.filename)}">${ICONS.save}</a></div>
 </div></div>`;
     }
 
